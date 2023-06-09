@@ -1,12 +1,12 @@
 require("dotenv")
-// const User = require("../models/user");
+const Admin = require("../models/admin");
 const jwt = require("jsonwebtoken")
 
 const verification = async (req, res, next) => {
     const { path } = req;
     const { token, api_key, authorization } = req.headers;
     //Check For Registration request [No Need of auuthorization and token]
-    if(path == "/library/home"){
+    if (path == "/library/home") {
         next();
     }//Check For Login request [No need of token as user logging in]
     else if (path == "/library/login") {
@@ -15,12 +15,12 @@ const verification = async (req, res, next) => {
             if (authorization) {
                 const email = authorization.split(" ")[1];
                 //Check is the user available for the given email if yes proceed next
-                const user = await User.findOne({ email: email });
-                if (user) {
+                const admin = await Admin.findOne({ email: email });
+                if (admin) {
                     next();
                 } else {
-                    console.log("User not found");
-                    res.status(403).send("User not found");
+                    console.log("Admin not found");
+                    res.status(403).send("Admin not found");
                 }
             } else {
                 console.log("Please Provide Authorization");
@@ -39,10 +39,10 @@ const verification = async (req, res, next) => {
             if (token) {
                 if (authorization) {
                     const email = authorization.split(" ")[1];
-                    const user = await User.findOne({ email: email});
-                    if (user) {
+                    const admin = await Admin.findOne({ email: email });
+                    if (admin) {
                         jwt.verify(token, process.env.JWT_SECRET, (err, auth) => {
-                            if (err) { 
+                            if (err) {
                                 console.log(err);
                                 res.send({ result: "Invalid Token", err: err.message });
                             } else {
@@ -51,17 +51,17 @@ const verification = async (req, res, next) => {
                         })
                     }
                     else {
-                        console.log("User not found");
+                        console.log("Admin not found");
                         res.status(403).json({
-                            message:"USer not found",
-                            isUser:"false"
+                            message: "Admin not found",
+                            isAdmin: "false"
                         });
                     }
                 } else {
                     console.log("Please Provide Authorization");
                     res.status(403).json({
-                        message:"Please Provide Authorization",
-                        isUser:"false"
+                        message: "Please Provide Authorization",
+                        isAdmin: "false"
                     });
                 }
 
