@@ -8,7 +8,6 @@ const {
     updateStudent,
     removeStudent,
     getStudents,
-    getTotalStudents
 } = require("../controllers/studentController");
 
 const router = require("express").Router();
@@ -17,7 +16,6 @@ router.post('/student', registerStudent)
 router.put('/student', updateStudent)
 router.delete('/student', removeStudent)
 router.get('/student',getStudents)
-router.get('/studentCount',getTotalStudents)
 
 module.exports = (app) => {
     app.use('/library', router);

@@ -145,7 +145,7 @@ const getStudents = async (req,res) => {
     await Student.find().then((student)=>{
         return res.status(200).json({
             message: "Students Register Count",
-            count: student.length
+            count: student
         });
     }).catch(()=>{
         return res.status(400).json({
@@ -154,18 +154,5 @@ const getStudents = async (req,res) => {
     })
 }
 
-const getTotalStudents = async (req,res) => {
-    await Counter.findOne({idName:"Student"}).then((student)=>{
-        console.log(student.value);
-        return res.status(200).json({
-            message: "Total Students Count",
-            count: student.value
-        });
-    }).catch(()=>{
-        return res.status(400).json({
-            message: "Unable to get count",
-        });
-    })
-}
 
-module.exports = { registerStudent, updateStudent, removeStudent, getStudents, getTotalStudents};
+module.exports = { registerStudent, updateStudent, removeStudent, getStudents};
