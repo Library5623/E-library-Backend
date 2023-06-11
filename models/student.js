@@ -20,6 +20,9 @@ const studentSchema = new mongoose.Schema({
     transactionCount: {
         type: mongoose.Schema.Types.String,
     },
+    unreturnedBooks:{
+        type: mongoose.Schema.Types.String,
+    }
 });
 
 const Student = mongoose.model("Student", studentSchema);

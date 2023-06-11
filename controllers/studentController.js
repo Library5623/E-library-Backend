@@ -21,7 +21,8 @@ const registerStudent = async (req, res) => {
                     studentName: student.studentName,
                     email: student.email,
                     contactNumber: student.contactNumber,
-                    transactionCount: student.transactionCount
+                    transactionCount: student.transactionCount,
+                    unreturnedBooks:student.unreturnedBooks
                 },
                 isUser: true
             });
@@ -38,6 +39,7 @@ const registerStudent = async (req, res) => {
                     studentName: studentName,
                     contactNumber: contactNumber,
                     transactionCount: "0",
+                    unreturnedBooks:"0"
                 })
                     .then(async (student) => {
                         await Counter.findByIdAndUpdate(studentId._id, { $set: { value: count.toString() } })
@@ -84,7 +86,8 @@ const updateStudent = async (req, res) => {
                         studentName: newStudent.studentName,
                         email: newStudent.email,
                         contactNumber: newStudent.contactNumber,
-                        transactionCount: student.transactionCount
+                        transactionCount: student.transactionCount,
+                        unreturnedBooks:student.unreturnedBooks
                     },
                     isUser: true
                 });
