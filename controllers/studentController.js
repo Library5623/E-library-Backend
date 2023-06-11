@@ -3,6 +3,7 @@ const Counter = require("../models/counters");
 const Admin = require("../models/admin");
 const jwt = require('jsonwebtoken');
 const dotenv = require("dotenv");
+const { default: mongoose } = require("mongoose");
 dotenv.config();
 
 const registerStudent = async (req, res) => {
@@ -41,12 +42,15 @@ const registerStudent = async (req, res) => {
                     .then(async (student) => {
                         await Counter.findByIdAndUpdate(studentId._id, { $set: { value: count.toString() } })
                         if (student) {
-                            res.statusCode = 200;
-                            res.json({ message: "Student Created Successfully", student: student });
+                            return res.status(200).json({
+                                message: "Student Added Succesfully",
+                                student:student
+                            });
                         }
                         else {
-                            res.statusCode = 400;
-                            res.json({ message: "Error in Student Register", });
+                            return res.status(400).json({
+                                message: "Error in student register",
+                            });
                         }
                     })
             } else {
@@ -85,12 +89,14 @@ const updateStudent = async (req, res) => {
                     isUser: true
                 });
             } else {
-                res.statusCode = 400;
-                res.json({ message: "Error in Updation", });
+                return res.status(400).json({
+                    message: "Error in Updation",
+                });
             }
         } else {
-            res.statusCode = 400;
-            res.json({ message: "Student Does Not Exist", });
+            return res.status(400).json({
+                message: "Student Does Not Exist",
+            });
         }
     } catch (err) {
         console.log(err);
@@ -132,4 +138,31 @@ const removeStudent = async (req, res) => {
 
 }
 
-module.exports = { registerStudent, updateStudent, removeStudent };
+const getStudents = async (req,res) => {
+    await Student.find().then((student)=>{
+        return res.status(200).json({
+            message: "Students Register Count",
+            count: student.length
+        });
+    }).catch(()=>{
+        return res.status(400).json({
+            message: "Unable to get count",
+        });
+    })
+}
+
+const getTotalStudents = async (req,res) => {
+    await Counter.findOne({idName:"Student"}).then((student)=>{
+        console.log(student.value);
+        return res.status(200).json({
+            message: "Total Students Count",
+            count: student.value
+        });
+    }).catch(()=>{
+        return res.status(400).json({
+            message: "Unable to get count",
+        });
+    })
+}
+
+module.exports = { registerStudent, updateStudent, removeStudent, getStudents, getTotalStudents};

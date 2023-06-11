@@ -21,13 +21,13 @@ const login = async (req, res, next) => {
                     }
                 });
             } else {
-                res.statusCode = 404;
+                res.statusCode = 400;
                 res.setHeader('Content-Type', 'application/json');
                 res.json({ message: "Wrong Password", error: err });
             }
         })
         .catch((err) => {
-            res.status(500).json({ message: "Admin Not Found" });
+            res.status(400).json({ message: "Admin Not Found" });
         })
 }
 
@@ -58,9 +58,9 @@ const changePassword = async (req, res) => {
 
 const all = async (req, res, next) => {
 
-    User.find({})
-        .then((users) => {
-            res.status(200).json({ users: users });
+    Admin.find({})
+        .then((admin) => {
+            res.status(200).json({ admin: admin });
         })
         .catch((err) => { res.json({ message: err.message }) });
 }
