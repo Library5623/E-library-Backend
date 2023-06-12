@@ -92,14 +92,15 @@ const updateTransaction = async (req, res) => {
         await Transaction.findOne({
             transactionId: transactionId
         }).then(async (transaction) => {
+            if(transaction.status=="return"){
             await Transaction.findByIdAndUpdate(transaction._id, {
                 $set: { 
                     status: "returned",
                     returnedDate:returnedDate,
                  }
             }).then(async () => {
-                await Student.findOneAndUpdate({
-                    studentId:transaction.studentId,
+                const student = await Student.findOne({id:transaction.studentId});
+                await Student.findByIdAndUpdate(student._id,{
                     $set: { 
                         unreturnedBooks:"0",
                      }
@@ -124,6 +125,11 @@ const updateTransaction = async (req, res) => {
                     message: "Error in Returning",
                 });
             })
+        }else{
+            return res.status(200).json({
+                message: "Cannot return the book as it is already returned",
+            });
+        }
         })
     } catch (error) {
         return res.status(500).json({
