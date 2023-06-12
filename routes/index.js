@@ -4,6 +4,8 @@ const adminRoutes = require("./adminRoutes");
 const studentRoutes = require("./studentRoutes");
 const transactionRoutes = require("./transactionRoutes");
 const dashboardRoutes = require("./dashboardRoutes");
+const bookRoutes = require("./bookRoutes");
+
 
 const routes = (app) => {
     testRoutes(app)
@@ -11,6 +13,7 @@ const routes = (app) => {
     studentRoutes(app)
     transactionRoutes(app)
     dashboardRoutes(app)
+    bookRoutes(app)
 }
 
 module.exports = routes
