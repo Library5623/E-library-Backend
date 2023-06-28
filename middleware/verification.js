@@ -5,7 +5,6 @@ const jwt = require("jsonwebtoken")
 const verification = async (req, res, next) => {
     const { path } = req;
     const { token, api_key, authorization } = req.headers;
-    //Check For Registration request [No Need of auuthorization and token]
     if (path == "/library/home") {
         next();
     }//Check For Login request [No need of token as user logging in]
@@ -31,7 +30,7 @@ const verification = async (req, res, next) => {
             console.log("Invalid API key");
             res.status(403).send("Invalid api key");
         }
-    }//For request other than Register/Login 
+    }//For request other than Login 
     else {
         //Check Api Key
         if (api_key == process.env.API_KEY) {
@@ -41,6 +40,7 @@ const verification = async (req, res, next) => {
                     const email = authorization.split(" ")[1];
                     const admin = await Admin.findOne({ email: email });
                     if (admin) {
+                        //Verify the  token is it valid or invalid
                         jwt.verify(token, process.env.JWT_SECRET, (err, auth) => {
                             if (err) {
                                 console.log(err);

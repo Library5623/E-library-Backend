@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 
+//Student record format
 const studentSchema = new mongoose.Schema({
     id: {
         type: mongoose.Schema.Types.String,

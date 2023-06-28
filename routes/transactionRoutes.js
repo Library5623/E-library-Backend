@@ -1,4 +1,4 @@
-//All user routes comes here
+//All transaction routes (api request)
 const dotenv = require("dotenv");
 
 dotenv.config();

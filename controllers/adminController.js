@@ -4,6 +4,8 @@ const dotenv = require("dotenv");
 const bcrypt = require('bcrypt');
 dotenv.config();
 
+
+//Login into the system using the email and password provided in mongodb
 const login = async (req, res, next) => {
     const { email, password } = req.query;
     Admin.findOne({ email: email })
@@ -31,6 +33,8 @@ const login = async (req, res, next) => {
         })
 }
 
+//Change of password by some security checks 
+//Addition of checks remained
 const changePassword = async (req, res) => {
     const { email, newPassword } = req.query;
     try {
@@ -56,8 +60,8 @@ const changePassword = async (req, res) => {
 
 }
 
+//List all the admins in the database 
 const all = async (req, res, next) => {
-
     Admin.find({})
         .then((admin) => {
             res.status(200).json({ admin: admin });

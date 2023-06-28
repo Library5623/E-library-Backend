@@ -5,32 +5,36 @@ const Book = require("../models/book");
 const dotenv = require("dotenv");
 dotenv.config();
 
+//Pass the required argument to make a new transaction record
 const addRecord = async (req, res) => {
     var { studentId, bookCode, borrowedDate } = req.query;
     try {
         await Student.findOne({
             id: studentId
         }).then(async (student) => {
-            if(student.unreturnedBooks == "0"){
+            //Checks the student history if any book unreturned unable to add transaction
+            if (student.unreturnedBooks == "0") {
                 await Book.findOne({
                     bookCode: bookCode
                 }).then(async (book) => {
-    
+                    //Checks the available book quantity and if book quantity is 0 no transaction made
                     if (book.quantity > 0) {
                         const transactionId = await Counter.findOne({ idName: "Transaction" });
                         var count = parseInt(transactionId.value);
                         count++;
+                        //System will generate a transaction id
                         const transaction = await Transaction.create({
                             transactionId: count.toString(),
                             studentId: studentId,
                             bookCode: bookCode,
                             bookName: book.bookName,
                             studentName: student.studentName,
-                            borrowedDate:borrowedDate,
-                            returnedDate:"",
+                            borrowedDate: borrowedDate,
+                            returnedDate: "",
                             status: "return",
                         });
                         if (transaction) {
+                            //On succesful transaction quantity of book is reduced and student will have 1 unreturned book
                             var quantity = parseInt(book.quantity);
                             quantity--;
                             await Book.findByIdAndUpdate(book._id, {
@@ -38,12 +42,13 @@ const addRecord = async (req, res) => {
                             });
                             await Counter.findByIdAndUpdate(transactionId._id, { $set: { value: count.toString() } });
                             var studentTransaction = parseInt(student.transactionCount);
+                            //Update the total transactions made by student
                             studentTransaction++;
                             await Student.findByIdAndUpdate(student._id, {
-                                $set: { 
+                                $set: {
                                     transactionCount: studentTransaction.toString(),
-                                    unreturnedBooks:"1",
-                                 }
+                                    unreturnedBooks: "1",
+                                }
                             });
                             return res.status(200).json({
                                 message: "Transaction Added",
@@ -54,27 +59,27 @@ const addRecord = async (req, res) => {
                                 message: "Error in Transaction",
                             });
                         }
-    
+
                     } else {
                         return res.status(400).json({
                             message: "Book insufficient",
                         });
                     }
-    
+
                 }).catch((error) => {
                     return res.status(400).json({
                         message: "Book not found",
                     });
                 })
-            }else{
+            } else {
                 return res.status(400).json({
                     message: "Cannot allot due to unreturned book",
-                }); 
+                });
             }
-            
+
         }).catch((error) => {
             return res.status(400).json({
-                message: "Student ID not found",
+                message: "Student not found",
             });
         })
 
@@ -86,25 +91,29 @@ const addRecord = async (req, res) => {
 
 }
 
+// Function to return the book and update the record
 const updateTransaction = async (req, res) => {
     var { transactionId, returnedDate } = req.query;
-    try {
-        await Transaction.findOne({
-            transactionId: transactionId
-        }).then(async (transaction) => {
-            if(transaction.status=="return"){
+    await Transaction.findOne({
+        transactionId: transactionId
+    }).then(async (transaction) => {
+        if (transaction.status == "return") //Remove this because flutter will take care of this
+        {
+            //Transaction status updated to returned from return
             await Transaction.findByIdAndUpdate(transaction._id, {
-                $set: { 
+                $set: {
                     status: "returned",
-                    returnedDate:returnedDate,
-                 }
+                    returnedDate: returnedDate,
+                }
             }).then(async () => {
-                const student = await Student.findOne({id:transaction.studentId});
-                await Student.findByIdAndUpdate(student._id,{
-                    $set: { 
-                        unreturnedBooks:"0",
-                     }
+                const student = await Student.findOne({ id: transaction.studentId });
+                //Student unreturened book count updated to 0
+                await Student.findByIdAndUpdate(student._id, {
+                    $set: {
+                        unreturnedBooks: "0",
+                    }
                 });
+                //Book quantity is incremented as it is returned
                 await Book.findOne({ bookCode: transaction.bookCode }).then(async (book) => {
                     var quantity = parseInt(book.quantity);
                     quantity++;
@@ -125,24 +134,22 @@ const updateTransaction = async (req, res) => {
                     message: "Error in Returning",
                 });
             })
-        }else{
+        } else {
             return res.status(200).json({
                 message: "Cannot return the book as it is already returned",
             });
         }
-        })
-    } catch (error) {
+    }).catch((error) => {
         return res.status(500).json({
             message: "Transaction doesnt exist",
-        });
-
-    }
+        })
+    })
 }
 
+//Returns a list of all made transactions
 const getTransactions = async (req, res) => {
     var { status } = req.query;
     try {
-
         var transactions = await Transaction.find({
             status: status
         })
@@ -158,7 +165,4 @@ const getTransactions = async (req, res) => {
     }
 }
 
-
-
-
-module.exports = { addRecord, updateTransaction, getTransactions};
+module.exports = { addRecord, updateTransaction, getTransactions };

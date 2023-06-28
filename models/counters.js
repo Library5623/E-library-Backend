@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 
+//Counter record format used to generate id for student and transaction
 const counterSchema = new mongoose.Schema({
     idName: {
         type: mongoose.Schema.Types.String,

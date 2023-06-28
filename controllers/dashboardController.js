@@ -3,6 +3,8 @@ const Book = require("../models/book");
 const Counter = require("../models/counters");
 const Transaction = require("../models/transaction");
 
+
+//Returns total current registered students, total available distinct books, and total transactions made along with last 5 transactions
 const getDetails = async (req, res) => {
     try {
         const studentCount = await Student.find();
@@ -18,7 +20,7 @@ const getDetails = async (req, res) => {
                     }).catch((error) => {
                         return res.status(400).json({
                             message: "Transaction not found",
-                            error:error
+                            error: error
                         });
                     })
                 } else {
@@ -30,7 +32,7 @@ const getDetails = async (req, res) => {
                 studentCount: studentCount.length,
                 bookCount: bookCount.length,
                 transactionCount: transactionCounter,
-                transactions:transactions
+                transactions: transactions
             });
         } else {
             return res.status(400).json({
@@ -48,4 +50,4 @@ const getDetails = async (req, res) => {
 }
 
 
-module.exports = { getDetails};
+module.exports = { getDetails };

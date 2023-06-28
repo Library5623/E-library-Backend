@@ -4,6 +4,7 @@ const Admin = require("../models/admin");
 
 dotenv.config();
 
+// Provide the book details as json object 
 const addBook = async (req, res) => {
   var { bookCode, bookName, bookImage, bookAuthor, description, quantity } =
     req.body;
@@ -11,6 +12,7 @@ const addBook = async (req, res) => {
     const book = await Book.findOne({
       bookCode: bookCode,
     });
+    //If database has the book already stored it will update the existing bookk with the new details and quantity (works similar to the update function) 
     if (book) {
       var bookQuantity = parseInt(book.quantity);
       var newQuantity = parseInt(quantity);
@@ -22,10 +24,9 @@ const addBook = async (req, res) => {
           bookImage: bookImage,
           bookAuthor: bookAuthor,
           description: description,
-          quantity: bookQuantity < 0? "0": bookQuantity.toString(),
+          quantity: bookQuantity < 0 ? "0" : bookQuantity.toString(),
         },
       });
-
       return res.status(200).json({
         message: "Book details updated",
         book: {
@@ -38,6 +39,7 @@ const addBook = async (req, res) => {
         },
       });
     } else {
+      //Add new book document in the database as its a new book
       if (
         bookCode &&
         bookName &&
@@ -80,6 +82,7 @@ const addBook = async (req, res) => {
   }
 };
 
+//Pass the bookcode and admin password to remove a book from the database 
 const removeBook = async (req, res) => {
   const { bookCode, password } = req.query;
   const { authorization } = req.headers;
@@ -100,6 +103,10 @@ const removeBook = async (req, res) => {
           message: "Wrong Admin Credentials",
         });
       }
+    }).catch((err) => {
+      return res.status(400).json({
+        message: "Unable to find the book",
+      });
     });
   } catch (err) {
     console.log(err);
@@ -109,6 +116,7 @@ const removeBook = async (req, res) => {
   }
 };
 
+//Returns a List of all the books prresent in the database
 const getBooks = async (req, res) => {
   await Book.find()
     .then((book) => {
@@ -124,4 +132,4 @@ const getBooks = async (req, res) => {
     });
 };
 
-module.exports = { addBook, removeBook, getBooks};
+module.exports = { addBook, removeBook, getBooks };

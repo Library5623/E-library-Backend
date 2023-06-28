@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 
+//Transaction record format
 const transactionSchema = new mongoose.Schema({
     transactionId: {
         type: mongoose.Schema.Types.String,

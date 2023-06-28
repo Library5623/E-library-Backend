@@ -6,6 +6,7 @@ const dotenv = require("dotenv");
 const { default: mongoose } = require("mongoose");
 dotenv.config();
 
+// A student json object is taken and added into the database
 const registerStudent = async (req, res) => {
     var { email, studentName, contactNumber } = req.body;
     console.log(email);
@@ -22,7 +23,7 @@ const registerStudent = async (req, res) => {
                     email: student.email,
                     contactNumber: student.contactNumber,
                     transactionCount: student.transactionCount,
-                    unreturnedBooks:student.unreturnedBooks
+                    unreturnedBooks: student.unreturnedBooks
                 },
                 isUser: true
             });
@@ -30,6 +31,7 @@ const registerStudent = async (req, res) => {
             if (email &&
                 studentName &&
                 contactNumber) {
+                //System will generate a student id for the student
                 const studentId = await Counter.findOne({ idName: "Student" });
                 var count = parseInt(studentId.value);
                 count++;
@@ -39,14 +41,14 @@ const registerStudent = async (req, res) => {
                     studentName: studentName,
                     contactNumber: contactNumber,
                     transactionCount: "0",
-                    unreturnedBooks:"0"
+                    unreturnedBooks: "0"
                 })
                     .then(async (student) => {
                         await Counter.findByIdAndUpdate(studentId._id, { $set: { value: count.toString() } })
                         if (student) {
                             return res.status(200).json({
                                 message: "Student Added Succesfully",
-                                student:student
+                                student: student
                             });
                         }
                         else {
@@ -70,6 +72,7 @@ const registerStudent = async (req, res) => {
     }
 };
 
+//Pass the system generated student id to update the student details
 const updateStudent = async (req, res) => {
     var newStudent = req.body;
     try {
@@ -87,7 +90,7 @@ const updateStudent = async (req, res) => {
                         email: newStudent.email,
                         contactNumber: newStudent.contactNumber,
                         transactionCount: student.transactionCount,
-                        unreturnedBooks:student.unreturnedBooks
+                        unreturnedBooks: student.unreturnedBooks
                     },
                     isUser: true
                 });
@@ -109,6 +112,7 @@ const updateStudent = async (req, res) => {
     }
 };
 
+//Pass the student id and admin password to remove the  student from database
 const removeStudent = async (req, res) => {
     const { id, password } = req.query;
     const { authorization } = req.headers;
@@ -131,6 +135,10 @@ const removeStudent = async (req, res) => {
                     message: "Wrong Admin Credentials",
                 });
             }
+        }).catch((err) => {
+            return res.status(400).json({
+                message: "Student not found",
+            });
         })
     } catch (err) {
         console.log(err);
@@ -141,13 +149,14 @@ const removeStudent = async (req, res) => {
 
 }
 
-const getStudents = async (req,res) => {
-    await Student.find().then((student)=>{
+//Returns the list of all currently registred students
+const getStudents = async (req, res) => {
+    await Student.find().then((student) => {
         return res.status(200).json({
             message: "Students fetched ",
             count: student
         });
-    }).catch(()=>{
+    }).catch(() => {
         return res.status(400).json({
             message: "Unable to fetch students",
         });
@@ -155,4 +164,4 @@ const getStudents = async (req,res) => {
 }
 
 
-module.exports = { registerStudent, updateStudent, removeStudent, getStudents};
+module.exports = { registerStudent, updateStudent, removeStudent, getStudents };

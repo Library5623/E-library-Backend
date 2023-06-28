@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 
+//Book record format
 const bookSchema = new mongoose.Schema({
     bookCode: {
         type: mongoose.Schema.Types.String,

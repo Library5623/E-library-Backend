@@ -1,4 +1,4 @@
-//All user routes comes here
+//All dashboard routes
 const dotenv = require("dotenv");
 
 dotenv.config();
@@ -8,7 +8,7 @@ const {
 
 const router = require("express").Router();
 
-router.get('/dashboard',getDetails)
+router.get('/dashboard', getDetails)
 
 module.exports = (app) => {
     app.use('/library', router);

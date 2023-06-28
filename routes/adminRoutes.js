@@ -1,4 +1,4 @@
-//All user routes comes here
+//All admin routes (api request)
 const jwt = require('jsonwebtoken');
 const dotenv = require("dotenv");
 
