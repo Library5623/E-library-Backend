@@ -148,14 +148,10 @@ const updateTransaction = async (req, res) => {
 
 //Returns a list of all made transactions
 const getTransactions = async (req, res) => {
-    var { status } = req.query;
     try {
-        var transactions = await Transaction.find({
-            status: status
-        })
+        var transactions = await Transaction.find({});
         return res.status(200).json({
-            message: "Transaction fetched",
-            transactions: transactions,
+            transactions:transactions,
         });
 
     } catch (error) {
