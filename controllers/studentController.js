@@ -154,7 +154,7 @@ const getStudents = async (req, res) => {
     await Student.find().then((student) => {
         return res.status(200).json({
             message: "Students fetched ",
-            count: student
+            students: student
         });
     }).catch(() => {
         return res.status(400).json({

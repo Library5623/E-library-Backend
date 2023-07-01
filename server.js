@@ -4,6 +4,7 @@ const routes = require("./routes");
 const mongoose = require("mongoose");
 const dotenv = require("dotenv");
 const bodyParser = require("body-parser");
+const cors = require("cors");
 
 const jwt = require('jsonwebtoken');
 const { verification } = require("./middleware/verification");
@@ -17,6 +18,7 @@ const dataBaseString = process.env.MONGODB_URI;
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json())
+app.use(cors());
 
 //middleware to check is the request is valid [Correct API_KEY, Token, Admin]
 app.use(verification);
