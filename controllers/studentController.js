@@ -15,7 +15,7 @@ const registerStudent = async (req, res) => {
             email: email
         });
         if (student) {
-            return res.status(200).json({
+            return res.status(400).json({
                 message: "Student already exists",
                 student: {
                     id: student.id,
@@ -79,29 +79,39 @@ const updateStudent = async (req, res) => {
         const student = await Student.findOne({
             id: newStudent.id
         });
-        if (student) {
-            const updated = await Student.findOneAndUpdate({ _id: student._id }, newStudent);
-            if (updated) {
-                return res.status(200).json({
-                    message: "Student Details Updated",
-                    student: {
-                        id: newStudent.id,
-                        studentName: newStudent.studentName,
-                        email: newStudent.email,
-                        contactNumber: newStudent.contactNumber,
-                        transactionCount: student.transactionCount,
-                        unreturnedBooks: student.unreturnedBooks
-                    },
-                    isUser: true
-                });
+        const validEmail = await Student.findOne({
+            email: newStudent.email
+        });
+        if (!validEmail) {
+            if (student) {
+                const updated = await Student.findOneAndUpdate({ _id: student._id }, newStudent);
+                if (updated) {
+                    return res.status(200).json({
+                        message: "Student Details Updated",
+                        student: {
+                            id: newStudent.id,
+                            studentName: newStudent.studentName,
+                            email: newStudent.email,
+                            contactNumber: newStudent.contactNumber,
+                            transactionCount: student.transactionCount,
+                            unreturnedBooks: student.unreturnedBooks
+                        },
+                        isUser: true
+                    });
+                } else {
+                    return res.status(400).json({
+                        message: "Error in Updation",
+                    });
+                }
             } else {
                 return res.status(400).json({
-                    message: "Error in Updation",
+                    message: "Student Does Not Exist",
                 });
             }
-        } else {
+        }
+        else {
             return res.status(400).json({
-                message: "Student Does Not Exist",
+                message: "Email associated with other student updation error",
             });
         }
     } catch (err) {
@@ -117,7 +127,6 @@ const removeStudent = async (req, res) => {
     const { id, password } = req.query;
     const { authorization } = req.headers;
     const email = authorization.split(" ")[1];
-    console.log(email);
     try {
         const student = await Student.findOne({
             id: id
