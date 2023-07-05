@@ -122,7 +122,7 @@ const getBooks = async (req, res) => {
     .then((book) => {
       return res.status(200).json({
         message: "Books fetched succesfully",
-        count: book,
+        books: book,
       });
     })
     .catch(() => {
