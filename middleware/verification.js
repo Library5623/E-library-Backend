@@ -19,16 +19,21 @@ const verification = async (req, res, next) => {
                     next();
                 } else {
                     console.log("Admin not found");
-                    res.status(403).send("Admin not found");
+                    res.status(400).json({
+                        message: "Admin not found",
+                    })
                 }
             } else {
-                console.log("Please Provide Authorization");
-                res.status(403).send("Please Provide Authorization");
+                res.status(403).json({
+                    message: "Admin not authorized",
+                })
             }
 
         } else {
             console.log("Invalid API key");
-            res.status(403).send("Invalid api key");
+            res.status(400).json({
+                message: "Invalid Api key",
+            })
         }
     }//For request other than Login 
     else {
@@ -43,8 +48,10 @@ const verification = async (req, res, next) => {
                         //Verify the  token is it valid or invalid
                         jwt.verify(token, process.env.JWT_SECRET, (err, auth) => {
                             if (err) {
-                                console.log(err);
-                                res.send({ result: "Invalid Token", err: err.message });
+                               res.status(400).json({
+                                    message: "Session Finished Please Login Again",
+                                    validToken:false,
+                                })
                             } else {
                                 next();
                             }
@@ -52,26 +59,26 @@ const verification = async (req, res, next) => {
                     }
                     else {
                         console.log("Admin not found");
-                        res.status(403).json({
+                        return res.status(400).json({
                             message: "Admin not found",
-                            isAdmin: "false"
-                        });
+                            isAdmin: false,
+                        })
                     }
                 } else {
                     console.log("Please Provide Authorization");
-                    res.status(403).json({
-                        message: "Please Provide Authorization",
-                        isAdmin: "false"
+                    return res.status(403).json({
+                        message: "Admin not Authorized",
+                        isAdmin: false
                     });
                 }
 
             } else {
                 console.log("Token Not Provided");
-                res.status(403).send("Token Not Provided");
+                return res.status(400).json({ message: "Token Not Provided" });
             }
         } else {
             console.log("Invalid API key ");
-            res.status(403).send("Invalid api key ");
+            return res.status(400).json({ message: "Invalid api key " });
         }
     }
 };

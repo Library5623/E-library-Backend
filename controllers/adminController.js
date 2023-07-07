@@ -11,21 +11,24 @@ const login = async (req, res, next) => {
     Admin.findOne({ email: email })
         .then((admin) => {
             if (admin.password === password) {
-                jwt.sign({ email }, process.env.JWT_SECRET, { expiresIn: '8640000s' }, (err, token) => {
+                jwt.sign({ email }, process.env.JWT_SECRET, { expiresIn: '86400s' }, (err, token) => {
                     if (err) {
-                        res.status(200).json({
+                        res.status(400).json({
                             message: "Error in Creating token",
                             error: err
                         })
                     } else {
-                        res.statusCode = 200;
-                        res.json({ message: "Admin loge-In Successful", admin: admin, token: token });
+                        res.status(200).json({
+                            message: "Admin loge-In Successful",
+                            admin: admin,
+                            token: token
+                        })
                     }
                 });
             } else {
-                res.statusCode = 400;
-                res.setHeader('Content-Type', 'application/json');
-                res.json({ message: "Wrong Password", error: err });
+                res.status(400).json({
+                    message: "Wrong Password",
+                })
             }
         })
         .catch((err) => {
@@ -33,6 +36,13 @@ const login = async (req, res, next) => {
         })
 }
 
+
+const chechAdmin = async (req, res) => {
+    return res.status(200).json({
+        message: 'Valid Admin',
+        validToken: true,
+    })
+}
 //Change of password by some security checks 
 //Addition of checks remained
 const changePassword = async (req, res) => {
@@ -61,12 +71,5 @@ const changePassword = async (req, res) => {
 }
 
 //List all the admins in the database 
-const all = async (req, res, next) => {
-    Admin.find({})
-        .then((admin) => {
-            res.status(200).json({ admin: admin });
-        })
-        .catch((err) => { res.json({ message: err.message }) });
-}
 
-module.exports = { login, changePassword, all };
+module.exports = { login, changePassword, chechAdmin };

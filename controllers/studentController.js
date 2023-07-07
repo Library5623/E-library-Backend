@@ -9,7 +9,6 @@ dotenv.config();
 // A student json object is taken and added into the database
 const registerStudent = async (req, res) => {
     var { email, studentName, contactNumber } = req.body;
-    console.log(email);
     try {
         const student = await Student.findOne({
             email: email

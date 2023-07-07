@@ -6,14 +6,14 @@ dotenv.config();
 const {
     login,
     changePassword,
-    all
+    chechAdmin
 } = require("../controllers/adminController");
 
 const router = require("express").Router();
 
-router.post('/login', login)
+router.get('/login', login)
+router.get('/check',chechAdmin)
 router.put('/password', changePassword)
-router.get('/all', all);
 
 module.exports = (app) => {
     app.use('/library', router);
