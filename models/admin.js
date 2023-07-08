@@ -10,6 +10,9 @@ const adminSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.String,
         required: true
     },
+    isLogin:{
+        type: mongoose.Schema.Types.String,
+    }
 });
 
 const Admin = mongoose.model("Admin", adminSchema);

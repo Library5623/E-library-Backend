@@ -8,7 +8,7 @@ const verification = async (req, res, next) => {
     if (path == "/library/home") {
         next();
     }//Check For Login request [No need of token as user logging in]
-    else if (path == "/library/login") {
+    else if (path == "/library/login"||path == "/library/logout") {
         //Check for api key
         if (api_key === process.env.API_KEY) {
             if (authorization) {
@@ -46,8 +46,9 @@ const verification = async (req, res, next) => {
                     const admin = await Admin.findOne({ email: email });
                     if (admin) {
                         //Verify the  token is it valid or invalid
-                        jwt.verify(token, process.env.JWT_SECRET, (err, auth) => {
+                        jwt.verify(token, process.env.JWT_SECRET, async (err, auth) => {
                             if (err) {
+                               await Admin.findByIdAndUpdate(admin._id,{$set:{isLogin:'0'}});
                                res.status(400).json({
                                     message: "Session Finished Please Login Again",
                                     validToken:false,

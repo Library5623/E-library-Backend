@@ -6,28 +6,34 @@ dotenv.config();
 
 
 //Login into the system using the email and password provided in mongodb
-const login = async (req, res, next) => {
+const login = async (req, res) => {
     const { email, password } = req.query;
     Admin.findOne({ email: email })
-        .then((admin) => {
-            if (admin.password === password) {
-                jwt.sign({ email }, process.env.JWT_SECRET, { expiresIn: '86400s' }, (err, token) => {
-                    if (err) {
-                        res.status(400).json({
-                            message: "Error in Creating token",
-                            error: err
-                        })
-                    } else {
-                        res.status(200).json({
-                            message: "Admin loge-In Successful",
-                            admin: admin,
-                            token: token
-                        })
-                    }
-                });
+        .then(async (admin) => {
+            if (admin.isLogin === '0') {
+                if (admin.password === password) {
+                    await Admin.findByIdAndUpdate(admin._id, { $set: { isLogin: '1' } });
+                    jwt.sign({ email }, process.env.JWT_SECRET, { expiresIn: '86400s' }, (err, token) => {
+                        if (err) {
+                            res.status(400).json({
+                                message: "Error in Creating token",
+                                error: err
+                            })
+                        } else {
+                            res.status(200).json({
+                                message: "Admin loge-In Successful",
+                                token: token
+                            })
+                        }
+                    });
+                } else {
+                    res.status(400).json({
+                        message: "Wrong Password",
+                    })
+                }
             } else {
                 res.status(400).json({
-                    message: "Wrong Password",
+                    message: "User Logged In On Other Device",
                 })
             }
         })
@@ -45,31 +51,17 @@ const chechAdmin = async (req, res) => {
 }
 //Change of password by some security checks 
 //Addition of checks remained
-const changePassword = async (req, res) => {
-    const { email, newPassword } = req.query;
-    try {
-        const admin = await Admin.findOne({ email: email });
-        Admin.findOneAndUpdate(admin._id, {
-            $set: { password: newPassword }
+const logout = async (req, res) => {
+    const { email } = req.query;
+    Admin.findOneAndUpdate({ email: email, $set: { isLogin: '0' } }).then((admin) => {
+        return res.status(200).json({
+            message: 'Logged Out',
         })
-            .then((admin) => {
-                res.status(200).json({
-                    message: "Password Updated Succesfully",
-                    admin: admin
-                })
-            }).catch((e) => {
-                res.status(400).json({
-                    message: "Unable to Update Password",
-                })
-            });
-    } catch (e) {
-        res.status(400).json({
-            message: "Admin Not Found",
-        });
-    }
-
+    }).catch((err) => {
+        return res.status(400).json({ message: "Admin not found" });
+    })
 }
 
 //List all the admins in the database 
 
-module.exports = { login, changePassword, chechAdmin };
+module.exports = { login, logout, chechAdmin };
