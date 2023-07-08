@@ -19,11 +19,6 @@ const addBook = async (req, res) => {
       bookQuantity = bookQuantity + newQuantity;
       await Book.findByIdAndUpdate(book._id, {
         $set: {
-          bookCode: book.bookCode,
-          bookName: bookName,
-          bookImage: bookImage,
-          bookAuthor: bookAuthor,
-          description: description,
           quantity: bookQuantity < 0 ? "0" : bookQuantity.toString(),
         },
       });
