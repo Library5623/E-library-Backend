@@ -8,7 +8,7 @@ const verification = async (req, res, next) => {
     if (path == "/library/home") {
         next();
     }//Check For Login request [No need of token as user logging in]
-    else if (path == "/library/login"||path == "/library/logout") {
+    else if (path == "/library/login") {
         //Check for api key
         if (api_key === process.env.API_KEY) {
             if (authorization) {
@@ -19,21 +19,16 @@ const verification = async (req, res, next) => {
                     next();
                 } else {
                     console.log("Admin not found");
-                    res.status(400).json({
-                        message: "Admin not found",
-                    })
+                    res.status(400).json({ message: "Admin not found" });
                 }
             } else {
-                res.status(403).json({
-                    message: "Admin not authorized",
-                })
+                console.log("Please Provide Authorization");
+                res.status(400).json({ message: "Please Provide Authorization" });
             }
 
         } else {
             console.log("Invalid API key");
-            res.status(400).json({
-                message: "Invalid Api key",
-            })
+            res.status(400).json({ message: "Invalid api key" });
         }
     }//For request other than Login 
     else {
@@ -46,12 +41,11 @@ const verification = async (req, res, next) => {
                     const admin = await Admin.findOne({ email: email });
                     if (admin) {
                         //Verify the  token is it valid or invalid
-                        jwt.verify(token, process.env.JWT_SECRET, async (err, auth) => {
+                        jwt.verify(token, process.env.JWT_SECRET,  (err, auth) => {
                             if (err) {
-                               await Admin.findByIdAndUpdate(admin._id,{$set:{isLogin:'0'}});
-                               res.status(400).json({
+                                res.status(400).json({
                                     message: "Session Finished Please Login Again",
-                                    validToken:false,
+                                    validToken: false,
                                 })
                             } else {
                                 next();
@@ -60,26 +54,26 @@ const verification = async (req, res, next) => {
                     }
                     else {
                         console.log("Admin not found");
-                        return res.status(400).json({
+                        res.status(400).json({
                             message: "Admin not found",
-                            isAdmin: false,
-                        })
+                            isAdmin: "false"
+                        });
                     }
                 } else {
                     console.log("Please Provide Authorization");
-                    return res.status(403).json({
-                        message: "Admin not Authorized",
-                        isAdmin: false
+                    res.status(400).json({
+                        message: "Please Provide Authorization",
+                        isAdmin: "false"
                     });
                 }
 
             } else {
                 console.log("Token Not Provided");
-                return res.status(400).json({ message: "Token Not Provided" });
+                res.status(400).json({ message: "Token Not Provided" });
             }
         } else {
             console.log("Invalid API key ");
-            return res.status(400).json({ message: "Invalid api key " });
+            res.status(403).json({ message: "Invalid api key " });
         }
     }
 };
