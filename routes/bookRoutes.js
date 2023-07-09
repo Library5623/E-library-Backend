@@ -5,12 +5,14 @@ dotenv.config();
 const {
   addBook,
   removeBook,
-  getBooks
+  getBooks,
+  updateBook
 } = require("../controllers/bookController");
 
 const router = require("express").Router();
 
 router.post('/book', addBook);
+router.put('/book', updateBook);
 router.delete('/book', removeBook);
 router.get('/book', getBooks);
 

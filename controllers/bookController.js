@@ -14,24 +14,10 @@ const addBook = async (req, res) => {
     });
     //If database has the book already stored it will update the existing bookk with the new details and quantity (works similar to the update function) 
     if (book) {
-      var bookQuantity = parseInt(book.quantity);
-      var newQuantity = parseInt(quantity);
-      bookQuantity = bookQuantity + newQuantity;
-      await Book.findByIdAndUpdate(book._id, {
-        $set: {
-          quantity: bookQuantity < 0 ? "0" : bookQuantity.toString(),
-        },
-      });
+      
       return res.status(200).json({
-        message: "Book details updated",
-        book: {
-          bookCode: book.bookCode,
-          bookName: bookName,
-          bookImage: bookImage,
-          bookAuthor: bookAuthor,
-          description: description,
-          quantity: bookQuantity < 0 ? "0" : bookQuantity.toString(),
-        },
+        message: "Book Code already exists",
+        book: book,
       });
     } else {
       //Add new book document in the database as its a new book
@@ -75,6 +61,48 @@ const addBook = async (req, res) => {
       error: err,
     });
   }
+};
+
+const updateBook = async (req, res) => {
+  const {bookCode, quantity} = req.query;
+  
+  try {
+    const book = await Book.findOne({
+      bookCode: bookCode,
+    });
+    if (book) {
+      var bookQuantity = parseInt(book.quantity);
+      var newQuantity = parseInt(quantity);
+      bookQuantity = bookQuantity + newQuantity;
+      await Book.findByIdAndUpdate(book._id, {
+        $set: {
+          quantity: bookQuantity.toString()
+        },
+      });
+      return res.status(200).json({
+        message: "Book details updated",
+        book: {
+          bookCode: bookCode,
+          bookName: book.bookName,
+          bookImage: book.bookImage,
+          bookAuthor: book.bookAuthor,
+          description: book.description,
+          quantity: bookQuantity.toString(),
+        },
+      
+      });
+      
+  } else {  
+    return res.status(400).json({
+      message: "Book not found",
+    });
+  }
+} catch (err) {
+  return res.status(400).json({
+    message: "Error in book updation",
+    error: err,
+  });
+}
 };
 
 //Pass the bookcode and admin password to remove a book from the database 
@@ -127,4 +155,4 @@ const getBooks = async (req, res) => {
     });
 };
 
-module.exports = { addBook, removeBook, getBooks };
+module.exports = { addBook, removeBook, getBooks, updateBook };
