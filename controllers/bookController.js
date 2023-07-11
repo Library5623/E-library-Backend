@@ -14,7 +14,7 @@ const addBook = async (req, res) => {
     });
     //If database has the book already stored it will update the existing bookk with the new details and quantity (works similar to the update function) 
     if (book) {
-      
+
       return res.status(200).json({
         message: "Book Code already exists",
         book: book,
@@ -64,8 +64,8 @@ const addBook = async (req, res) => {
 };
 
 const updateBook = async (req, res) => {
-  const {bookCode, quantity} = req.query;
-  
+  const { bookCode, quantity } = req.query;
+
   try {
     const book = await Book.findOne({
       bookCode: bookCode,
@@ -87,22 +87,21 @@ const updateBook = async (req, res) => {
           bookImage: book.bookImage,
           bookAuthor: book.bookAuthor,
           description: book.description,
-          quantity: bookQuantity.toString(),
+          quantity: bookQuantity < 1 ? '0' : bookQuantity.toString(),
         },
-      
       });
-      
-  } else {  
+
+    } else {
+      return res.status(400).json({
+        message: "Book not found",
+      });
+    }
+  } catch (err) {
     return res.status(400).json({
-      message: "Book not found",
+      message: "Error in book updation",
+      error: err,
     });
   }
-} catch (err) {
-  return res.status(400).json({
-    message: "Error in book updation",
-    error: err,
-  });
-}
 };
 
 //Pass the bookcode and admin password to remove a book from the database 
