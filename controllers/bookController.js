@@ -65,7 +65,6 @@ const addBook = async (req, res) => {
 
 const updateBook = async (req, res) => {
   const { bookCode, quantity } = req.query;
-
   try {
     const book = await Book.findOne({
       bookCode: bookCode,
@@ -74,9 +73,10 @@ const updateBook = async (req, res) => {
       var bookQuantity = parseInt(book.quantity);
       var newQuantity = parseInt(quantity);
       bookQuantity = bookQuantity + newQuantity;
+      var quantityString=bookQuantity < 1 ? '0' : bookQuantity.toString();
       await Book.findByIdAndUpdate(book._id, {
         $set: {
-          quantity: bookQuantity.toString()
+          quantity: quantityString
         },
       });
       return res.status(200).json({
@@ -87,7 +87,7 @@ const updateBook = async (req, res) => {
           bookImage: book.bookImage,
           bookAuthor: book.bookAuthor,
           description: book.description,
-          quantity: bookQuantity < 1 ? '0' : bookQuantity.toString(),
+          quantity: quantityString,
         },
       });
 
