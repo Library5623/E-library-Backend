@@ -90,7 +90,7 @@ const updateStudent = async (req, res) => {
                         student: {
                             id: newStudent.id,
                             studentName: newStudent.studentName,
-                            email: newStudent.email,
+                            email: student.email,
                             contactNumber: newStudent.contactNumber,
                             transactionCount: student.transactionCount,
                             unreturnedBooks: student.unreturnedBooks

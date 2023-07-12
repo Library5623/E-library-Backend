@@ -16,6 +16,7 @@ const getDetails = async (req, res) => {
             for (var i = transactionCounter; i > transactionCounter - 5; i--) {
                 if (i != 0) {
                     await Transaction.findOne({ transactionId: i }).then((transaction) => {
+                        if(transaction!=null)
                         transactions.push(transaction);
                     }).catch((error) => {
                         return res.status(400).json({
