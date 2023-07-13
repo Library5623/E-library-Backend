@@ -13,7 +13,7 @@ const getDetails = async (req, res) => {
         if (studentCount && transactionCount && bookCount) {
             var transactionCounter = parseInt(transactionCount.value);
             var transactions = [];
-            for (var i = transactionCounter; i > transactionCounter - 5; i--) {
+            for (var i = transactionCounter; i > transactionCounter - 7; i--) {
                 if (i != 0) {
                     await Transaction.findOne({ transactionId: i }).then((transaction) => {
                         if(transaction!=null)
